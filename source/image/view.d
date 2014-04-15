@@ -1,5 +1,8 @@
 
+module image.view;
+
 // Copy-pasta from http://blog.thecybershadow.net/2014/03/21/functional-image-processing-in-d/
+// That's some genius stuff there.
 
 /// A view is any type which provides a width, height,
 /// and can be indexed to get the color at a specific
