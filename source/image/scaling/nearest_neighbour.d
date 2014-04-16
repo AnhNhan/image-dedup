@@ -3,13 +3,11 @@ module image.scaling.nearest_neighbour;
 
 import image.view;
 
-import std.math : floor;
-
 auto nearest_neighbour(V)(V src, size_t new_w, size_t new_h)
     if (isWritableView!V && is(typeof(V(1, 1))))
 {
-    auto w_ratio = src.w / cast(float) new_w;
-    auto h_ratio = src.h / cast(float) new_h;
+    auto w_ratio = (src.w << 16) / new_w + 1;
+    auto h_ratio = (src.h << 16) / new_h + 1;
     size_t pw, ph;
 
     auto dst = V(new_w, new_h);
@@ -18,8 +16,8 @@ auto nearest_neighbour(V)(V src, size_t new_w, size_t new_h)
     {
         foreach (h; 0..new_h)
         {
-            pw = cast(size_t) (w * w_ratio).floor;
-            ph = cast(size_t) (h * h_ratio).floor;
+            pw = (w * w_ratio) >> 16;
+            ph = (h * h_ratio) >> 16;
             dst[w, h] = src[pw, ph];
         }
     }
