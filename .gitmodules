@@ -1,0 +1,6 @@
+[submodule "vendor/ae"]
+	path = vendor/ae
+	url = git@github.com:CyberShadow/ae.git
+[submodule "vendor/imaged"]
+	path = vendor/imaged
+	url = https://github.com/callumenator/imaged
