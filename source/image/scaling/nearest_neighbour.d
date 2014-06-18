@@ -3,6 +3,10 @@ module image.scaling.nearest_neighbour;
 
 import image.view;
 
+pure:
+@safe:
+nothrow:
+
 auto nearest_neighbour(V)(V src, size_t new_w, size_t new_h)
     if (isWritableView!V && is(typeof(V(1, 1))))
 {
@@ -25,41 +29,8 @@ auto nearest_neighbour(V)(V src, size_t new_w, size_t new_h)
     return dst;
 }
 
-// This is just for testing
-version(unittest)
-struct Img(T)
-{
-    T[][] src;
-    this(T[][] _src)
-    {
-        src = _src;
-    }
-    this(size_t w, size_t h)
-    {
-        src.length = w;
-        foreach (ref r; src)
-            r.length = h;
-    }
-    @property size_t w()
-    {
-        return src.length;
-    }
-    @property size_t h()
-    {
-        return src[0].length;
-    }
-    ref T opIndex(size_t w, size_t h)
-    {
-        return src[w][h];
-    }
-    T opIndexAssign(T value, size_t w, size_t h)
-    {
-        return src[w][h] = value;
-    }
-}
-
 unittest {
-    static assert(isWritableView!(Img!ubyte));
+    import image.dummy;
 
     auto img_2x2 = Img!ubyte([
         [1, 2],
