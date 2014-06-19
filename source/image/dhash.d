@@ -4,36 +4,26 @@ module image.dhash;
 import image.scaling.bilinear;
 import image.view;
 
-// pure:
-// @safe:
-// nothrow:
-
 enum dhash_size
 {
-    w = 8
-  , h = 9
+    w = 9
+  , h = 8
 }
 
-bool[downsized_w * (downsized_h - 1) - 1] generate_dhash(View, size_t downsized_w = dhash_size.w, size_t downsized_h = dhash_size.h)(View v)
+ulong generate_dhash(View)(View v)
     if (isView!View)
 {
     typeof(return) dhash_bitfield;
-    alias GreyColor = typeof(v[0, 0].r);
-    GreyColor[downsized_w * (downsized_h - 1)] greyscale_field;
+    auto downsized_view = v.greyscale.bilinear(dhash_size.w, dhash_size.h);
 
-    auto downsized_view = v.bilinear(downsized_w, downsized_h);
-
-    foreach (w; 1..downsized_w)
+    foreach (w; 1..dhash_size.w)
     {
-        foreach (h; 0..downsized_h)
+        foreach (h; 0..dhash_size.h)
         {
-            immutable pos = (w - 1) * downsized_h + h + 1;
-            const pix = downsized_view[w, h];
-            // TODO: For better hash performance, convert to greyscale before downscaling
-            greyscale_field[pos] = (pix.r + pix.g + pix.b) / 3;
+            immutable pos = (w - 1) * dhash_size.h + h + 1;
             bool _bit;
-            _bit = greyscale_field[pos - 1] < greyscale_field[pos];
-            dhash_bitfield[pos - 1] = _bit;
+            _bit = downsized_view[w - 1, h].r < downsized_view[w, h].r;
+            dhash_bitfield |= (cast(ulong) _bit) << pos;
         }
     }
 
