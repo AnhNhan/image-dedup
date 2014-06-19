@@ -20,6 +20,11 @@ enum {
 
 alias ubyte stbi_uc;
 
+/*
+    NOTE: D expects `stbi_load` to be called `_stbi_load` during linking,
+          but my GCC mangles them as `stbi_load`. The functions have been renamed
+          accordingly in `stb_image.c` accordingly.
+ */
 
 // see stb_image.c for comments
 extern (C) {

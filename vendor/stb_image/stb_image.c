@@ -79,7 +79,7 @@
 //
 // Basic usage (see HDR discussion below):
 //    int x,y,n;
-//    unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
+//    unsigned char *data = _stbi_load(filename, &x, &y, &n, 0);
 //    // ... process data if not NULL ...
 //    // ... x = width, y = height, n = # 8-bit components per pixel ...
 //    // ... replace '0' with '1'..'4' to force that many components per pixel
@@ -155,7 +155,7 @@
 // Additionally, there is a new, parallel interface for loading files as
 // (linear) floats to preserve the full dynamic range:
 //
-//    float *data = stbi_loadf(filename, &x, &y, &n, 0);
+//    float *data = _stbi_loadf(filename, &x, &y, &n, 0);
 //
 // If you load LDR images through this interface, those images will
 // be promoted to floating point values, run through the inverse of
@@ -220,12 +220,12 @@ extern "C" {
 // load image by filename, open file, or memory buffer
 //
 
-extern stbi_uc *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
+extern stbi_uc *_stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
 
 #ifndef STBI_NO_STDIO
-extern stbi_uc *stbi_load            (char const *filename,     int *x, int *y, int *comp, int req_comp);
-extern stbi_uc *stbi_load_from_file  (FILE *f,                  int *x, int *y, int *comp, int req_comp);
-// for stbi_load_from_file, file pointer is left pointing immediately after image
+extern stbi_uc *_stbi_load            (char const *filename,     int *x, int *y, int *comp, int req_comp);
+extern stbi_uc *_stbi_load_from_file  (FILE *f,                  int *x, int *y, int *comp, int req_comp);
+// for _stbi_load_from_file, file pointer is left pointing immediately after image
 #endif
 
 typedef struct
@@ -235,17 +235,17 @@ typedef struct
    int      (*eof)   (void *user);                       // returns nonzero if we are at end of file/data
 } stbi_io_callbacks;
 
-extern stbi_uc *stbi_load_from_callbacks  (stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp);
+extern stbi_uc *_stbi_load_from_callbacks  (stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp);
 
 #ifndef STBI_NO_HDR
-   extern float *stbi_loadf_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
+   extern float *_stbi_loadf_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
 
    #ifndef STBI_NO_STDIO
-   extern float *stbi_loadf            (char const *filename,   int *x, int *y, int *comp, int req_comp);
-   extern float *stbi_loadf_from_file  (FILE *f,                int *x, int *y, int *comp, int req_comp);
+   extern float *_stbi_loadf            (char const *filename,   int *x, int *y, int *comp, int req_comp);
+   extern float *_stbi_loadf_from_file  (FILE *f,                int *x, int *y, int *comp, int req_comp);
    #endif
 
-   extern float *stbi_loadf_from_callbacks  (stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp);
+   extern float *_stbi_loadf_from_callbacks  (stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp);
 
    extern void   stbi_hdr_to_ldr_gamma(float gamma);
    extern void   stbi_hdr_to_ldr_scale(float scale);
@@ -268,7 +268,7 @@ extern int      stbi_is_hdr_from_file(FILE *f);
 extern const char *stbi_failure_reason  (void);
 
 // free the loaded image -- this is just free()
-extern void     stbi_image_free      (void *retval_from_stbi_load);
+extern void     stbi_image_free      (void *retval_from__stbi_load);
 
 // get image dimensions & components without fully decoding
 extern int      stbi_info_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp);
@@ -521,9 +521,9 @@ static int e(const char *str)
 #define epf(x,y)   ((float *) (e(x,y)?NULL:NULL))
 #define epuc(x,y)  ((unsigned char *) (e(x,y)?NULL:NULL))
 
-void stbi_image_free(void *retval_from_stbi_load)
+void stbi_image_free(void *retval_from__stbi_load)
 {
-   free(retval_from_stbi_load);
+   free(retval_from__stbi_load);
 }
 
 #ifndef STBI_NO_HDR
@@ -531,7 +531,7 @@ static float   *ldr_to_hdr(stbi_uc *data, int x, int y, int comp);
 static stbi_uc *hdr_to_ldr(float   *data, int x, int y, int comp);
 #endif
 
-static unsigned char *stbi_load_main(stbi *s, int *x, int *y, int *comp, int req_comp)
+static unsigned char *_stbi_load_main(stbi *s, int *x, int *y, int *comp, int req_comp)
 {
    if (stbi_jpeg_test(s)) return stbi_jpeg_load(s,x,y,comp,req_comp);
    if (stbi_png_test(s))  return stbi_png_load(s,x,y,comp,req_comp);
@@ -554,83 +554,83 @@ static unsigned char *stbi_load_main(stbi *s, int *x, int *y, int *comp, int req
 }
 
 #ifndef STBI_NO_STDIO
-unsigned char *stbi_load(char const *filename, int *x, int *y, int *comp, int req_comp)
+unsigned char *_stbi_load(char const *filename, int *x, int *y, int *comp, int req_comp)
 {
    FILE *f = fopen(filename, "rb");
    unsigned char *result;
    if (!f) return epuc("can't fopen", "Unable to open file");
-   result = stbi_load_from_file(f,x,y,comp,req_comp);
+   result = _stbi_load_from_file(f,x,y,comp,req_comp);
    fclose(f);
    return result;
 }
 
-unsigned char *stbi_load_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
+unsigned char *_stbi_load_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
 {
    stbi s;
    start_file(&s,f);
-   return stbi_load_main(&s,x,y,comp,req_comp);
+   return _stbi_load_main(&s,x,y,comp,req_comp);
 }
 #endif //!STBI_NO_STDIO
 
-unsigned char *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
+unsigned char *_stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
 {
    stbi s;
    start_mem(&s,buffer,len);
-   return stbi_load_main(&s,x,y,comp,req_comp);
+   return _stbi_load_main(&s,x,y,comp,req_comp);
 }
 
-unsigned char *stbi_load_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
+unsigned char *_stbi_load_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
 {
    stbi s;
    start_callbacks(&s, (stbi_io_callbacks *) clbk, user);
-   return stbi_load_main(&s,x,y,comp,req_comp);
+   return _stbi_load_main(&s,x,y,comp,req_comp);
 }
 
 #ifndef STBI_NO_HDR
 
-float *stbi_loadf_main(stbi *s, int *x, int *y, int *comp, int req_comp)
+float *_stbi_loadf_main(stbi *s, int *x, int *y, int *comp, int req_comp)
 {
    unsigned char *data;
    #ifndef STBI_NO_HDR
    if (stbi_hdr_test(s))
       return stbi_hdr_load(s,x,y,comp,req_comp);
    #endif
-   data = stbi_load_main(s, x, y, comp, req_comp);
+   data = _stbi_load_main(s, x, y, comp, req_comp);
    if (data)
       return ldr_to_hdr(data, *x, *y, req_comp ? req_comp : *comp);
    return epf("unknown image type", "Image not of any known type, or corrupt");
 }
 
-float *stbi_loadf_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
+float *_stbi_loadf_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
 {
    stbi s;
    start_mem(&s,buffer,len);
-   return stbi_loadf_main(&s,x,y,comp,req_comp);
+   return _stbi_loadf_main(&s,x,y,comp,req_comp);
 }
 
-float *stbi_loadf_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
+float *_stbi_loadf_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
 {
    stbi s;
    start_callbacks(&s, (stbi_io_callbacks *) clbk, user);
-   return stbi_loadf_main(&s,x,y,comp,req_comp);
+   return _stbi_loadf_main(&s,x,y,comp,req_comp);
 }
 
 #ifndef STBI_NO_STDIO
-float *stbi_loadf(char const *filename, int *x, int *y, int *comp, int req_comp)
+float *_stbi_loadf(char const *filename, int *x, int *y, int *comp, int req_comp)
 {
    FILE *f = fopen(filename, "rb");
    float *result;
    if (!f) return epf("can't fopen", "Unable to open file");
-   result = stbi_loadf_from_file(f,x,y,comp,req_comp);
+   result = _stbi_loadf_from_file(f,x,y,comp,req_comp);
    fclose(f);
    return result;
 }
 
-float *stbi_loadf_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
+float *_stbi_loadf_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
 {
    stbi s;
    start_file(&s,f);
-   return stbi_loadf_main(&s,x,y,comp,req_comp);
+   return _stbi_loadf_main(&s,x,y,comp,req_comp);
 }
 #endif // !STBI_NO_STDIO
 
@@ -4596,7 +4596,7 @@ int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int *x, int
       1.30 (2011-06-11)
              added ability to load files via callbacks to accomidate custom input streams (Ben Wenger)
              removed deprecated format-specific test/load functions
-             removed support for installable file formats (stbi_loader) -- would have been broken for IO callbacks anyway
+             removed support for installable file formats (_stbi_loader) -- would have been broken for IO callbacks anyway
              error cases in bmp and tga give messages and don't leak (Raymond Barbiero, grisha)
              fix inefficiency in decoding 32-bit BMP (David Woo)
       1.29 (2010-08-16)
