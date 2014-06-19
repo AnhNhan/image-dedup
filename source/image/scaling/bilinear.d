@@ -2,6 +2,7 @@
 module image.scaling.bilinear;
 
 import image.view;
+import image.color : RGB_8;
 
 /// Implements lazy image resizing using bilinear interpolation.
 auto bilinear(V)(V src, size_t new_w, size_t new_h)
@@ -33,8 +34,8 @@ auto bilinear(V)(V src, size_t new_w, size_t new_h)
 
             static if (__traits(compiles, {
                 // Instantiate a new instance
-                typeof(A)(A.r, A.g, A.b);
-            }))
+                color(A.r, A.g, A.b);
+            }) || is(color : RGB) || is(color : RGBA) || is(color : RGB_8))
             {
                 alias typeof(color.r) ret;
                 return color(
@@ -58,7 +59,7 @@ auto bilinear(V)(V src, size_t new_w, size_t new_h)
     return BilinearAccess(src, new_w, new_h, x_ratio, y_ratio);
 }
 
-private Ret interp(Ret, A, B, C, D, W, H)(A a, B b, C c, D d, W w, H h)
+private Ret interp(Ret, A, B, C, D, W, H)(A a, B b, C c, D d, W w, H h) pure @safe nothrow
 {
     // Y = A(1-w)(1-h) + B(w)(1-h) + C(h)(1-w) + Dwh
     return cast(Ret) (a * (1 - w) * (1 - h) + b * w * (1 - h) + c * h * (1 - w) + d * w * h);
