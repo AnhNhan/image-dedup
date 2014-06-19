@@ -32,7 +32,8 @@ auto stb_load_ae(string filename)
         }
     }
 
-    const arr = loaded[0..(x * y * comp)];
+    const arr = loaded[0..(x * y * comp)].idup;
+    stbi_image_free(loaded);
 
     return StbImage(arr, x, y);
 }
