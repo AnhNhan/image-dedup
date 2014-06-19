@@ -20,14 +20,30 @@ auto bilinear(V)(V src, size_t new_w, size_t new_h)
 
         auto opIndex(X, Y)(X in_x, Y in_y)
         {
-            const x = (x_ratio * in_x).to!int;
-            const y = (y_ratio * in_y).to!int;
-            const x_diff = (x_ratio * in_x) - x;
-            const y_diff = (y_ratio * in_y) - y;
+            const x_scaled = x_ratio * in_x;
+            const y_scaled = y_ratio * in_y;
+
+            const x = cast(int) x_scaled;
+            const y = cast(int) y_scaled;
+
+            const fx1 = x_scaled - x;
+            const fy1 = y_scaled - y;
+            const fx2 = 1.0 - fx1;
+            const fy2 = 1.0 - fy1;
+
+            const wgt1 = cast(int) (fx2 * fy2 * 256.0);
+            const wgt2 = cast(int) (fx1 * fy2 * 256.0);
+            const wgt3 = cast(int) (fx2 * fy1 * 256.0);
+            const wgt4 = cast(int) (fx1 * fy1 * 256.0);
+
+            auto interp(Col)(Col p1, Col p2, Col p3, Col p4)
+            {
+                return cast(ubyte) ((p1 * wgt1 + p2 * wgt2 + p3 * wgt3 + p4 * wgt4) >> 8);
+            }
 
             const A = src[x, y];
-            const B = src[x, y + 1];
-            const C = src[x + 1, y];
+            const B = src[x + 1, y];
+            const C = src[x, y + 1];
             const D = src[x + 1, y + 1];
 
             alias typeof(A) color;
@@ -37,16 +53,15 @@ auto bilinear(V)(V src, size_t new_w, size_t new_h)
                 color(A.r, A.g, A.b);
             }) || is(color : RGB) || is(color : RGBA) || is(color : RGB_8))
             {
-                alias typeof(color.r) ret;
                 return color(
-                    interp!ret(A.r, B.r, C.r, D.r, x_diff, y_diff)
-                  , interp!ret(A.g, B.g, C.g, D.g, x_diff, y_diff)
-                  , interp!ret(A.b, B.b, C.b, D.b, x_diff, y_diff)
+                    interp(A.r, B.r, C.r, D.r)
+                  , interp(A.g, B.g, C.g, D.g)
+                  , interp(A.b, B.b, C.b, D.b)
                 );
             }
             else static if(isIntegral!color)
             {
-                return interp!color(A, B, C, D, x_diff, y_diff);
+                return interp(A, B, C, D);
             }
             else
                 static assert(0, "Unsupported color format.");
@@ -57,12 +72,6 @@ auto bilinear(V)(V src, size_t new_w, size_t new_h)
     const y_ratio = (src.h - 1.0) / new_h;
 
     return BilinearAccess(src, new_w, new_h, x_ratio, y_ratio);
-}
-
-private Ret interp(Ret, A, B, C, D, W, H)(A a, B b, C c, D d, W w, H h) pure @safe nothrow
-{
-    // Y = A(1-w)(1-h) + B(w)(1-h) + C(h)(1-w) + Dwh
-    return cast(Ret) (a * (1 - w) * (1 - h) + b * w * (1 - h) + c * h * (1 - w) + d * w * h);
 }
 
 unittest {
