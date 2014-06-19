@@ -84,7 +84,7 @@
 //    // ... x = width, y = height, n = # 8-bit components per pixel ...
 //    // ... replace '0' with '1'..'4' to force that many components per pixel
 //    // ... but 'n' will always be the number that it would have been if you said 0
-//    stbi_image_free(data)
+//    _stbi_image_free(data)
 //
 // Standard parameters:
 //    int *x       -- outputs image width in pixels
@@ -268,7 +268,7 @@ extern int      stbi_is_hdr_from_file(FILE *f);
 extern const char *stbi_failure_reason  (void);
 
 // free the loaded image -- this is just free()
-extern void     stbi_image_free      (void *retval_from__stbi_load);
+extern void     _stbi_image_free      (void *retval_from__stbi_load);
 
 // get image dimensions & components without fully decoding
 extern int      stbi_info_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp);
@@ -521,7 +521,7 @@ static int e(const char *str)
 #define epf(x,y)   ((float *) (e(x,y)?NULL:NULL))
 #define epuc(x,y)  ((unsigned char *) (e(x,y)?NULL:NULL))
 
-void stbi_image_free(void *retval_from__stbi_load)
+void _stbi_image_free(void *retval_from__stbi_load)
 {
    free(retval_from__stbi_load);
 }
@@ -4641,7 +4641,7 @@ int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int *x, int
       1.07   attempt to fix C++ warning/errors again
       1.06   attempt to fix C++ warning/errors again
       1.05   fix TGA loading to return correct *comp and use good luminance calc
-      1.04   default float alpha is 1, not 255; use 'void *' for stbi_image_free
+      1.04   default float alpha is 1, not 255; use 'void *' for _stbi_image_free
       1.03   bugfixes to STBI_NO_STDIO, STBI_NO_HDR
       1.02   support for (subset of) HDR files, float interface for preferred access to them
       1.01   fix bug: possible bug in handling right-side up bmps... not sure
