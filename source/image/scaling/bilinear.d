@@ -20,23 +20,23 @@ auto bilinear(V)(V src, size_t new_w, size_t new_h)
 
         auto opIndex(X, Y)(X in_x, Y in_y)
         {
-            const x_scaled = x_ratio * in_x;
-            const y_scaled = y_ratio * in_y;
+            immutable x_scaled = x_ratio * in_x;
+            immutable y_scaled = y_ratio * in_y;
 
-            const x = cast(int) x_scaled;
-            const y = cast(int) y_scaled;
+            immutable x = cast(int) x_scaled;
+            immutable y = cast(int) y_scaled;
 
-            const fx1 = x_scaled - x;
-            const fy1 = y_scaled - y;
-            const fx2 = 1.0 - fx1;
-            const fy2 = 1.0 - fy1;
+            immutable fx1 = x_scaled - x;
+            immutable fy1 = y_scaled - y;
+            immutable fx2 = 1.0 - fx1;
+            immutable fy2 = 1.0 - fy1;
 
-            const wgt1 = cast(int) (fx2 * fy2 * 256.0);
-            const wgt2 = cast(int) (fx1 * fy2 * 256.0);
-            const wgt3 = cast(int) (fx2 * fy1 * 256.0);
-            const wgt4 = cast(int) (fx1 * fy1 * 256.0);
+            immutable wgt1 = cast(int) (fx2 * fy2 * 256.0);
+            immutable wgt2 = cast(int) (fx1 * fy2 * 256.0);
+            immutable wgt3 = cast(int) (fx2 * fy1 * 256.0);
+            immutable wgt4 = cast(int) (fx1 * fy1 * 256.0);
 
-            auto interp(Col)(Col p1, Col p2, Col p3, Col p4)
+            auto interp(Col)(Col p1, Col p2, Col p3, Col p4) pure @safe nothrow
             {
                 return cast(ubyte) ((p1 * wgt1 + p2 * wgt2 + p3 * wgt3 + p4 * wgt4) >> 8);
             }
