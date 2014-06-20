@@ -35,7 +35,7 @@
    See end of file for full revision history.
 
    TODO:
-      stbi_info support for BMP,PSD,HDR,PIC
+      _stbi_info support for BMP,PSD,HDR,PIC
 
 
  ============================    Contributors    =========================
@@ -50,7 +50,7 @@
                                                  Won Chun
                                                  the Horde3D community
  Extensions, features                            Janez Zemva
-    Jetro Lauha (stbi_info)                      Jonathan Blow
+    Jetro Lauha (_stbi_info)                      Jonathan Blow
     James "moose2000" Brown (iPhone PNG)         Laurent Gomila
     Ben "Disch" Wenger (io callbacks)            Aruelien Pocheville
     Martin "SpartanJ" Golini                     Ryamond Barbiero
@@ -112,7 +112,7 @@
 //       4           red, green, blue, alpha
 //
 // If image loading fails for any reason, the return value will be NULL,
-// and *x, *y, *comp will be unchanged. The function stbi_failure_reason()
+// and *x, *y, *comp will be unchanged. The function _stbi_failure_reason()
 // can be queried for an extremely brief, end-user unfriendly explanation
 // of why the load failed. Define STBI_NO_FAILURE_STRINGS to avoid
 // compiling these strings at all, and STBI_FAILURE_USERMSG to get slightly
@@ -127,10 +127,10 @@
 // By default we convert iphone-formatted PNGs back to RGB; nominally they
 // would silently load as BGR, except the existing code should have just
 // failed on such iPhone PNGs. But you can disable this conversion by
-// by calling stbi_convert_iphone_png_to_rgb(0), in which case
+// by calling _stbi_convert_iphone_png_to_rgb(0), in which case
 // you will always just get the native iphone "format" through.
 //
-// Call stbi_set_unpremultiply_on_load(1) as well to force a divide per
+// Call _stbi_set_unpremultiply_on_load(1) as well to force a divide per
 // pixel to remove any premultiplied alpha *only* if the image file explicitly
 // says there's premultiplied data (currently only happens in iPhone images,
 // and only if iPhone convert-to-rgb processing is on).
@@ -146,8 +146,8 @@
 // LDR, assuming gamma 2.2 and an arbitrary scale factor defaulting to 1;
 // both of these constants can be reconfigured through this interface:
 //
-//     stbi_hdr_to_ldr_gamma(2.2f);
-//     stbi_hdr_to_ldr_scale(1.0f);
+//     _stbi_hdr_to_ldr_gamma(2.2f);
+//     _stbi_hdr_to_ldr_scale(1.0f);
 //
 // (note, do not use _inverse_ constants; stbi_image will invert them
 // appropriately).
@@ -161,15 +161,15 @@
 // be promoted to floating point values, run through the inverse of
 // constants corresponding to the above:
 //
-//     stbi_ldr_to_hdr_scale(1.0f);
-//     stbi_ldr_to_hdr_gamma(2.2f);
+//     _stbi_ldr_to_hdr_scale(1.0f);
+//     _stbi_ldr_to_hdr_gamma(2.2f);
 //
 // Finally, given a filename (or an open file or memory block--see header
 // file for details) containing image data, you can query for the "most
 // appropriate" interface to use (that is, whether the image is HDR or
 // not), using:
 //
-//     stbi_is_hdr(char *filename);
+//     _stbi_is_hdr(char *filename);
 //
 // ===========================================================================
 //
@@ -247,36 +247,36 @@ extern stbi_uc *_stbi_load_from_callbacks  (stbi_io_callbacks const *clbk, void 
 
    extern float *_stbi_loadf_from_callbacks  (stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp);
 
-   extern void   stbi_hdr_to_ldr_gamma(float gamma);
-   extern void   stbi_hdr_to_ldr_scale(float scale);
+   extern void   _stbi_hdr_to_ldr_gamma(float gamma);
+   extern void   _stbi_hdr_to_ldr_scale(float scale);
 
-   extern void   stbi_ldr_to_hdr_gamma(float gamma);
-   extern void   stbi_ldr_to_hdr_scale(float scale);
+   extern void   _stbi_ldr_to_hdr_gamma(float gamma);
+   extern void   _stbi_ldr_to_hdr_scale(float scale);
 #endif // STBI_NO_HDR
 
-// stbi_is_hdr is always defined
-extern int    stbi_is_hdr_from_callbacks(stbi_io_callbacks const *clbk, void *user);
-extern int    stbi_is_hdr_from_memory(stbi_uc const *buffer, int len);
+// _stbi_is_hdr is always defined
+extern int    _stbi_is_hdr_from_callbacks(stbi_io_callbacks const *clbk, void *user);
+extern int    _stbi_is_hdr_from_memory(stbi_uc const *buffer, int len);
 #ifndef STBI_NO_STDIO
-extern int      stbi_is_hdr          (char const *filename);
-extern int      stbi_is_hdr_from_file(FILE *f);
+extern int      _stbi_is_hdr          (char const *filename);
+extern int      _stbi_is_hdr_from_file(FILE *f);
 #endif // STBI_NO_STDIO
 
 
 // get a VERY brief reason for failure
 // NOT THREADSAFE
-extern const char *stbi_failure_reason  (void);
+extern const char *_stbi_failure_reason  (void);
 
 // free the loaded image -- this is just free()
 extern void     _stbi_image_free      (void *retval_from__stbi_load);
 
 // get image dimensions & components without fully decoding
-extern int      stbi_info_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp);
-extern int      stbi_info_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp);
+extern int      _stbi_info_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp);
+extern int      _stbi_info_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp);
 
 #ifndef STBI_NO_STDIO
-extern int      stbi_info            (char const *filename,     int *x, int *y, int *comp);
-extern int      stbi_info_from_file  (FILE *f,                  int *x, int *y, int *comp);
+extern int      _stbi_info            (char const *filename,     int *x, int *y, int *comp);
+extern int      _stbi_info_from_file  (FILE *f,                  int *x, int *y, int *comp);
 
 #endif
 
@@ -285,21 +285,21 @@ extern int      stbi_info_from_file  (FILE *f,                  int *x, int *y, 
 // for image formats that explicitly notate that they have premultiplied alpha,
 // we just return the colors as stored in the file. set this flag to force
 // unpremultiplication. results are undefined if the unpremultiply overflow.
-extern void stbi_set_unpremultiply_on_load(int flag_true_if_should_unpremultiply);
+extern void _stbi_set_unpremultiply_on_load(int flag_true_if_should_unpremultiply);
 
 // indicate whether we should process iphone images back to canonical format,
 // or just pass them through "as-is"
-extern void stbi_convert_iphone_png_to_rgb(int flag_true_if_should_convert);
+extern void _stbi_convert_iphone_png_to_rgb(int flag_true_if_should_convert);
 
 
 // ZLIB client - used by PNG, available for other purposes
 
-extern char *stbi_zlib_decode_malloc_guesssize(const char *buffer, int len, int initial_size, int *outlen);
-extern char *stbi_zlib_decode_malloc(const char *buffer, int len, int *outlen);
-extern int   stbi_zlib_decode_buffer(char *obuffer, int olen, const char *ibuffer, int ilen);
+extern char *_stbi_zlib_decode_malloc_guesssize(const char *buffer, int len, int initial_size, int *outlen);
+extern char *_stbi_zlib_decode_malloc(const char *buffer, int len, int *outlen);
+extern int   _stbi_zlib_decode_buffer(char *obuffer, int olen, const char *ibuffer, int ilen);
 
-extern char *stbi_zlib_decode_noheader_malloc(const char *buffer, int len, int *outlen);
-extern int   stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char *ibuffer, int ilen);
+extern char *_stbi_zlib_decode_noheader_malloc(const char *buffer, int len, int *outlen);
+extern int   _stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char *ibuffer, int ilen);
 
 
 // define faster low-level operations (typically SIMD support)
@@ -317,8 +317,8 @@ typedef void (*stbi_YCbCr_to_RGB_run)(stbi_uc *output, stbi_uc const  *y, stbi_u
 //     cb: Cb input channel; scale/biased to be 0..255
 //     cr: Cr input channel; scale/biased to be 0..255
 
-extern void stbi_install_idct(stbi_idct_8x8 func);
-extern void stbi_install_YCbCr_to_RGB(stbi_YCbCr_to_RGB_run func);
+extern void _stbi_install_idct(stbi_idct_8x8 func);
+extern void _stbi_install_YCbCr_to_RGB(stbi_YCbCr_to_RGB_run func);
 #endif // STBI_SIMD
 
 
@@ -495,7 +495,7 @@ static int      stbi_gif_info(stbi *s, int *x, int *y, int *comp);
 // this is not threadsafe
 static const char *failure_reason;
 
-const char *stbi_failure_reason(void)
+const char *_stbi_failure_reason(void)
 {
    return failure_reason;
 }
@@ -640,7 +640,7 @@ float *_stbi_loadf_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
 // defined, for API simplicity; if STBI_NO_HDR is defined, it always
 // reports false!
 
-int stbi_is_hdr_from_memory(stbi_uc const *buffer, int len)
+int _stbi_is_hdr_from_memory(stbi_uc const *buffer, int len)
 {
    #ifndef STBI_NO_HDR
    stbi s;
@@ -654,18 +654,18 @@ int stbi_is_hdr_from_memory(stbi_uc const *buffer, int len)
 }
 
 #ifndef STBI_NO_STDIO
-extern int      stbi_is_hdr          (char const *filename)
+extern int      _stbi_is_hdr          (char const *filename)
 {
    FILE *f = fopen(filename, "rb");
    int result=0;
    if (f) {
-      result = stbi_is_hdr_from_file(f);
+      result = _stbi_is_hdr_from_file(f);
       fclose(f);
    }
    return result;
 }
 
-extern int      stbi_is_hdr_from_file(FILE *f)
+extern int      _stbi_is_hdr_from_file(FILE *f)
 {
    #ifndef STBI_NO_HDR
    stbi s;
@@ -677,7 +677,7 @@ extern int      stbi_is_hdr_from_file(FILE *f)
 }
 #endif // !STBI_NO_STDIO
 
-extern int      stbi_is_hdr_from_callbacks(stbi_io_callbacks const *clbk, void *user)
+extern int      _stbi_is_hdr_from_callbacks(stbi_io_callbacks const *clbk, void *user)
 {
    #ifndef STBI_NO_HDR
    stbi s;
@@ -692,11 +692,11 @@ extern int      stbi_is_hdr_from_callbacks(stbi_io_callbacks const *clbk, void *
 static float h2l_gamma_i=1.0f/2.2f, h2l_scale_i=1.0f;
 static float l2h_gamma=2.2f, l2h_scale=1.0f;
 
-void   stbi_hdr_to_ldr_gamma(float gamma) { h2l_gamma_i = 1/gamma; }
-void   stbi_hdr_to_ldr_scale(float scale) { h2l_scale_i = 1/scale; }
+void   _stbi_hdr_to_ldr_gamma(float gamma) { h2l_gamma_i = 1/gamma; }
+void   _stbi_hdr_to_ldr_scale(float scale) { h2l_scale_i = 1/scale; }
 
-void   stbi_ldr_to_hdr_gamma(float gamma) { l2h_gamma = gamma; }
-void   stbi_ldr_to_hdr_scale(float scale) { l2h_scale = scale; }
+void   _stbi_ldr_to_hdr_gamma(float gamma) { l2h_gamma = gamma; }
+void   _stbi_ldr_to_hdr_scale(float scale) { l2h_scale = scale; }
 #endif
 
 
@@ -1313,7 +1313,7 @@ static void idct_block(uint8 *out, int out_stride, short data[64], stbi_dequanti
 #ifdef STBI_SIMD
 static stbi_idct_8x8 stbi_idct_installed = idct_block;
 
-void stbi_install_idct(stbi_idct_8x8 func)
+void _stbi_install_idct(stbi_idct_8x8 func)
 {
    stbi_idct_installed = func;
 }
@@ -1772,7 +1772,7 @@ static void YCbCr_to_RGB_row(uint8 *out, const uint8 *y, const uint8 *pcb, const
 #ifdef STBI_SIMD
 static stbi_YCbCr_to_RGB_run stbi_YCbCr_installed = YCbCr_to_RGB_row;
 
-void stbi_install_YCbCr_to_RGB(stbi_YCbCr_to_RGB_run func)
+void _stbi_install_YCbCr_to_RGB(stbi_YCbCr_to_RGB_run func)
 {
    stbi_YCbCr_installed = func;
 }
@@ -2300,7 +2300,7 @@ static int do_zlib(zbuf *a, char *obuf, int olen, int exp, int parse_header)
    return parse_zlib(a, parse_header);
 }
 
-char *stbi_zlib_decode_malloc_guesssize(const char *buffer, int len, int initial_size, int *outlen)
+char *_stbi_zlib_decode_malloc_guesssize(const char *buffer, int len, int initial_size, int *outlen)
 {
    zbuf a;
    char *p = (char *) malloc(initial_size);
@@ -2316,12 +2316,12 @@ char *stbi_zlib_decode_malloc_guesssize(const char *buffer, int len, int initial
    }
 }
 
-char *stbi_zlib_decode_malloc(char const *buffer, int len, int *outlen)
+char *_stbi_zlib_decode_malloc(char const *buffer, int len, int *outlen)
 {
-   return stbi_zlib_decode_malloc_guesssize(buffer, len, 16384, outlen);
+   return _stbi_zlib_decode_malloc_guesssize(buffer, len, 16384, outlen);
 }
 
-char *stbi_zlib_decode_malloc_guesssize_headerflag(const char *buffer, int len, int initial_size, int *outlen, int parse_header)
+char *_stbi_zlib_decode_malloc_guesssize_headerflag(const char *buffer, int len, int initial_size, int *outlen, int parse_header)
 {
    zbuf a;
    char *p = (char *) malloc(initial_size);
@@ -2337,7 +2337,7 @@ char *stbi_zlib_decode_malloc_guesssize_headerflag(const char *buffer, int len, 
    }
 }
 
-int stbi_zlib_decode_buffer(char *obuffer, int olen, char const *ibuffer, int ilen)
+int _stbi_zlib_decode_buffer(char *obuffer, int olen, char const *ibuffer, int ilen)
 {
    zbuf a;
    a.zbuffer = (uint8 *) ibuffer;
@@ -2348,7 +2348,7 @@ int stbi_zlib_decode_buffer(char *obuffer, int olen, char const *ibuffer, int il
       return -1;
 }
 
-char *stbi_zlib_decode_noheader_malloc(char const *buffer, int len, int *outlen)
+char *_stbi_zlib_decode_noheader_malloc(char const *buffer, int len, int *outlen)
 {
    zbuf a;
    char *p = (char *) malloc(16384);
@@ -2364,7 +2364,7 @@ char *stbi_zlib_decode_noheader_malloc(char const *buffer, int len, int *outlen)
    }
 }
 
-int stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char *ibuffer, int ilen)
+int _stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char *ibuffer, int ilen)
 {
    zbuf a;
    a.zbuffer = (uint8 *) ibuffer;
@@ -2623,11 +2623,11 @@ static int expand_palette(png *a, uint8 *palette, int len, int pal_img_n)
 static int stbi_unpremultiply_on_load = 0;
 static int stbi_de_iphone_flag = 0;
 
-void stbi_set_unpremultiply_on_load(int flag_true_if_should_unpremultiply)
+void _stbi_set_unpremultiply_on_load(int flag_true_if_should_unpremultiply)
 {
    stbi_unpremultiply_on_load = flag_true_if_should_unpremultiply;
 }
-void stbi_convert_iphone_png_to_rgb(int flag_true_if_should_convert)
+void _stbi_convert_iphone_png_to_rgb(int flag_true_if_should_convert)
 {
    stbi_de_iphone_flag = flag_true_if_should_convert;
 }
@@ -2781,7 +2781,7 @@ static int parse_png_file(png *z, int scan, int req_comp)
             if (first) return e("first not IHDR", "Corrupt PNG");
             if (scan != SCAN_load) return 1;
             if (z->idata == NULL) return e("no IDAT","Corrupt PNG");
-            z->expanded = (uint8 *) stbi_zlib_decode_malloc_guesssize_headerflag((char *) z->idata, ioff, 16384, (int *) &raw_len, !iphone);
+            z->expanded = (uint8 *) _stbi_zlib_decode_malloc_guesssize_headerflag((char *) z->idata, ioff, 16384, (int *) &raw_len, !iphone);
             if (z->expanded == NULL) return 0; // zlib should set error
             free(z->idata); z->idata = NULL;
             if ((req_comp == s->img_n+1 && req_comp != 3 && !pal_img_n) || has_trans)
@@ -4522,7 +4522,7 @@ static int stbi_pic_info(stbi *s, int *x, int *y, int *comp)
    return 1;
 }
 
-static int stbi_info_main(stbi *s, int *x, int *y, int *comp)
+static int _stbi_info_main(stbi *s, int *x, int *y, int *comp)
 {
    if (stbi_jpeg_info(s, x, y, comp))
        return 1;
@@ -4547,40 +4547,40 @@ static int stbi_info_main(stbi *s, int *x, int *y, int *comp)
 }
 
 #ifndef STBI_NO_STDIO
-int stbi_info(char const *filename, int *x, int *y, int *comp)
+int _stbi_info(char const *filename, int *x, int *y, int *comp)
 {
     FILE *f = fopen(filename, "rb");
     int result;
     if (!f) return e("can't fopen", "Unable to open file");
-    result = stbi_info_from_file(f, x, y, comp);
+    result = _stbi_info_from_file(f, x, y, comp);
     fclose(f);
     return result;
 }
 
-int stbi_info_from_file(FILE *f, int *x, int *y, int *comp)
+int _stbi_info_from_file(FILE *f, int *x, int *y, int *comp)
 {
    int r;
    stbi s;
    long pos = ftell(f);
    start_file(&s, f);
-   r = stbi_info_main(&s,x,y,comp);
+   r = _stbi_info_main(&s,x,y,comp);
    fseek(f,pos,SEEK_SET);
    return r;
 }
 #endif // !STBI_NO_STDIO
 
-int stbi_info_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp)
+int _stbi_info_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp)
 {
    stbi s;
    start_mem(&s,buffer,len);
-   return stbi_info_main(&s,x,y,comp);
+   return _stbi_info_main(&s,x,y,comp);
 }
 
-int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int *x, int *y, int *comp)
+int _stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int *x, int *y, int *comp)
 {
    stbi s;
    start_callbacks(&s, (stbi_io_callbacks *) c, user);
-   return stbi_info_main(&s,x,y,comp);
+   return _stbi_info_main(&s,x,y,comp);
 }
 
 #endif // STBI_HEADER_FILE_ONLY
@@ -4588,7 +4588,7 @@ int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int *x, int
 /*
    revision history:
       1.33 (2011-07-14)
-             make stbi_is_hdr work in STBI_NO_HDR (as specified), minor compiler-friendly improvements
+             make _stbi_is_hdr work in STBI_NO_HDR (as specified), minor compiler-friendly improvements
       1.32 (2011-07-13)
              support for "info" function for all supported filetypes (SpartanJ)
       1.31 (2011-06-20)
@@ -4617,7 +4617,7 @@ int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int *x, int
       1.23   fixed bug in iPhone support
       1.22 (2010-07-10)
              removed image *writing* support
-             stbi_info support from Jetro Lauha
+             _stbi_info support from Jetro Lauha
              GIF support from Jean-Marc Lienher
              iPhone PNG-extensions from James Brown
              warning-fixes from Nicolas Schulz and Janez Zemva (i.e. Janez (U+017D)emva)
