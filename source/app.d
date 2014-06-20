@@ -1,6 +1,7 @@
 
 import std.algorithm;
 import std.array;
+import std.conv;
 import std.datetime;
 import std.file;
 import std.parallelism;
@@ -88,6 +89,42 @@ void print_dhash_of_file(string filename)
     stb_load_ae(filename).generate_dhash.to_bit_string.writeln;
 }
 
+void scan_for_progressive_jpegs(string dir_path)
+{
+    assert(exists(dir_path), dir_path ~ " does not exist!");
+    assert(isDir(dir_path), dir_path ~ " is not a directory!");
+
+    auto img_files = dirEntries(dir_path, "*.{png,jpg}", SpanMode.depth).array;
+
+    if (img_files.empty)
+    {
+        "No files to be analyzed. Done.".writeln;
+        return;
+    }
+
+    auto poolInstance = new TaskPool(totalCPUs - 1);
+    scope(exit) poolInstance.stop();
+
+    static __gshared auto hi (string path)
+    {
+        import stb_image;
+        int x, y, comp;
+        ubyte* loaded = stbi_load(path.toStringz(), &x, &y, &comp, 0);
+        if (loaded is null && to!string(stbi_failure_reason()) == "progressive jpeg")
+        {
+            return path;
+        }
+        else if (loaded is null)
+        {
+            return path ~ " - " ~ to!string(stbi_failure_reason());
+        }
+        stbi_image_free(loaded);
+        return "";
+    }
+
+    poolInstance.map!hi(img_files).filter!"!a.empty".join("\n").write;
+}
+
 void scan_for_duplicates(string dir_path)
 {
     assert(exists(dir_path), dir_path ~ " does not exist!");
@@ -113,7 +150,7 @@ void scan_for_duplicates(string dir_path)
 
     sw.start();
 
-    auto hashes = poolInstance.map!generate_dhash_for_file(img_files);
+    auto hashes = poolInstance.map!generate_dhash_for_file(img_files).array;
 
     sw.stop();
 
@@ -141,7 +178,7 @@ int main(string[] args) {
 
     if (args.empty)
     {
-        "Error. First argument should be a path.".writeln;
+        "Error. First argument should be a command.".writeln;
         return 1;
     }
 
@@ -155,6 +192,9 @@ int main(string[] args) {
             break;
         case "scan":
             args.front.scan_for_duplicates;
+            break;
+        case "scan-progressive-jpeg":
+            args.front.scan_for_progressive_jpegs;
             break;
         default:
             break;
