@@ -15,61 +15,12 @@ import image.scaling.bilinear;
 import image.stb;
 import image.view;
 
-import imaged.image : Pic = Image, Img, load, IMGError, Pixel, Px;
-
-struct ImageDToAEInterface
-{
-    Pic src;
-    const int w, h;
-
-    auto opIndex(size_t x, size_t y)
-    {
-        assert(x < w);
-        assert(y < h);
-        return src[x, y];
-    }
-}
-
-auto load_img_as_ae(string path)
-{
-    IMGError err;
-    Pic img = load(path, err);
-
-    if (img is null)
-    {
-        throw new Exception("Could not process " ~ path);
-    }
-    scope(exit) delete(img);
-
-    // This one is somehow better
-    //img.resize(dhash_size.w, dhash_size.h, Pic.ResizeAlgo.BILINEAR);
-
-    return ImageDToAEInterface(img, img.width, img.height);
-}
-
-void write_ae_image(V)(string filename, V img)
-    if (isView!V)
-{
-    auto write_img = new Img!(Px.R8G8B8)(img.w, img.h);
-
-    foreach (x; 0..write_img.width)
-    {
-        foreach (y; 0..write_img.height)
-        {
-            const pix = img[x, y];
-            write_img.setPixel(x, y, Pixel(pix.r, pix.g, pix.b));
-        }
-    }
-    write_img.write("ae.png");
-}
-
 auto generate_dhash_for_file(string path)
 {
     assert(exists(path));
     assert(isFile(path));
 
     path.writeln;
-    auto ae_img = stb_load_ae(path);
     auto hash = stb_load_ae(path).generate_dhash;
     return tuple(path, hash);
 }
