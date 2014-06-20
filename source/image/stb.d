@@ -16,17 +16,18 @@ auto stb_load_ae(string filename)
     {
         throw new Exception("Could not read file " ~ filename);
     }
-    assert(comp == 3);
+    assert(comp == 3 || comp == 4, "File " ~ filename ~ " has an unsupported color component configuration.");
 
     const struct StbImage
     {
         ubyte[] src;
         int w, h;
+        int comp;
 
         auto opIndex(int x, int y) const
         {
             assert(x < w && y < h);
-            const offset = y * 3 * w + x * 3;
+            const offset = y * comp * w + x * comp;
             assert(offset < src.length, std.string.format("Offset: %d, Len: %d, Dim: %d:%d, In: %d:%d", offset, src.length, w, h, x, y));
             return RGB(src[offset], src[offset + 1], src[offset + 2]);
         }
@@ -35,5 +36,5 @@ auto stb_load_ae(string filename)
     const arr = loaded[0..(x * y * comp)].idup;
     stbi_image_free(loaded);
 
-    return StbImage(arr, x, y);
+    return StbImage(arr, x, y, comp);
 }
