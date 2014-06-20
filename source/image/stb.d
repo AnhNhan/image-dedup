@@ -14,7 +14,7 @@ auto stb_load_ae(string filename)
     ubyte* loaded = stbi_load(filename.toStringz(), &x, &y, &comp, 3);
     if (loaded is null)
     {
-        throw new Exception("Could not read file " ~ filename);
+        throw new Exception("Could not read file " ~ filename ~ ". " ~ std.conv.to!string(stbi_failure_reason()));
     }
     assert(comp == 3 || comp == 4, "File " ~ filename ~ " has an unsupported color component configuration.");
 
