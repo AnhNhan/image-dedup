@@ -16,15 +16,15 @@ struct Img(T)
         foreach (ref r; src)
             r.length = h;
     }
-    @property size_t w()
+    @property size_t w() const
     {
         return src.length;
     }
-    @property size_t h()
+    @property size_t h() const
     {
         return src[0].length;
     }
-    ref T opIndex(size_t w, size_t h)
+    T opIndex(size_t w, size_t h) const
     {
         return src[w][h];
     }
