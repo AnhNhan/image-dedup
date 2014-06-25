@@ -52,22 +52,17 @@ auto group(T)(T hashes)
 
 bool bcmp(T, U)(T lhs, U rhs, size_t diff = 2)
 {
-    return lhs.xor(rhs).set_bits < diff;
+    return (lhs ^ rhs).set_bits < diff;
 }
 
-auto xor(T, U)(T lhs, U rhs)
+auto to_bit_string(string pos = "1", string neg = "0")(ulong num)
 {
-    return lhs ^ rhs;
-}
-
-auto to_bit_string(ulong num)
-{
-    char[64] ret;
+    auto app = appender!(char[]);
     foreach (n; 0..64)
     {
-        ret[n] = (num & (1 << n)) ? '1' : '0';
+        app.put((num & (1 << n)) ? pos : neg);
     }
-    return ret;
+    return app.data;
 }
 
 @property
@@ -102,10 +97,10 @@ void scan_for_progressive_jpegs(string dir_path)
         return;
     }
 
-    auto poolInstance = new TaskPool(totalCPUs - 1);
+    auto poolInstance = new TaskPool(totalCPUs);
     scope(exit) poolInstance.stop();
 
-    static __gshared auto hi (string path)
+    static auto hi(string path)
     {
         import stb_image;
         int x, y, comp;
@@ -122,7 +117,7 @@ void scan_for_progressive_jpegs(string dir_path)
         return "";
     }
 
-    poolInstance.map!hi(img_files).filter!"!a.empty".join("\n").write;
+    poolInstance.amap!hi(img_files).filter!"!a.empty".join("\n").write;
 }
 
 void scan_for_duplicates(string dir_path)
@@ -154,14 +149,14 @@ void scan_for_duplicates(string dir_path)
 
     sw.stop();
 
-    writeln("\nDone.\n\nTook me ", sw.peek.seconds, "s.");
+    writeln("\nDone.\n\nTook me ", sw.peek.seconds, "s.\n");
 
     auto groups = hashes.group;
 
     ElementType!(typeof(groups.keys))[] keys_for_removal;
     foreach (key, val; groups)
     {
-        if (val.empty)
+        if (val.length <= 1)
         {
             keys_for_removal ~= key;
         }
@@ -170,7 +165,11 @@ void scan_for_duplicates(string dir_path)
     {
         groups.remove(key);
     }
-    //groups.writeln;
+    groups.values.map!(
+        t => t.map!(
+            u => u[1].to_bit_string!("+", "-") ~ " - " ~ u[0]
+        ).join("\n")
+    ).join("\n\n - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n").writeln;
 }
 
 int main(string[] args) {
