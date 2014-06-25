@@ -27,8 +27,13 @@ auto stb_load_ae(string filename)
         auto opIndex(int x, int y) const
         {
             assert(x < w && y < h);
+
             const offset = y * comp * w + x * comp;
+
             assert(offset < src.length, std.string.format("Offset: %d, Len: %d, Dim: %d:%d, In: %d:%d", offset, src.length, w, h, x, y));
+            assert(offset >= 0);
+            assert(offset + comp < src.length);
+
             return RGB(src[offset], src[offset + 1], src[offset + 2]);
         }
     }
