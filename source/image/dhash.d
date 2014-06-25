@@ -29,7 +29,7 @@ ulong generate_dhash(View)(in View v)
 
     return dhash_bitfield;
 }
-
+/*
 unittest {
     import image.color;
     import image.dummy;
@@ -61,5 +61,6 @@ unittest {
     dhash1.writeln;
     dhash2.writeln;
     assert(dhash1 == dhash2);
-    */
+    *./
 }
+*/

@@ -18,6 +18,8 @@ auto greyscale(V)(in V src)
 
         auto opIndex(int in_x, int in_y)
         {
+            import std.traits : isIntegral;
+
             const orig = src[in_x, in_y];
             alias typeof(orig) color;
 
@@ -36,9 +38,4 @@ auto greyscale(V)(in V src)
     }
 
     return Greyscale(src);
-}
-
-unittest {
-    static assert(isView!(typeof(greyscale(onePixel(42)))));
-    static assert(isView!(typeof(greyscale(onePixel(RGB(10, 20, 30))))));
 }
