@@ -47,6 +47,19 @@ auto group(T)(T hashes)
         }
     }
 
+    ElementType!(typeof(groups.keys))[] keys_for_removal;
+    foreach (key, val; groups)
+    {
+        if (val.length <= 1)
+        {
+            keys_for_removal ~= key;
+        }
+    }
+    foreach (key; keys_for_removal)
+    {
+        groups.remove(key);
+    }
+
     return groups;
 }
 
@@ -153,18 +166,6 @@ void scan_for_duplicates(string dir_path)
 
     auto groups = hashes.group;
 
-    ElementType!(typeof(groups.keys))[] keys_for_removal;
-    foreach (key, val; groups)
-    {
-        if (val.length <= 1)
-        {
-            keys_for_removal ~= key;
-        }
-    }
-    foreach (key; keys_for_removal)
-    {
-        groups.remove(key);
-    }
     groups.values.map!(
         t => t.map!(
             u => u[1].to_bit_string!("+", "-") ~ " - " ~ u[0]
