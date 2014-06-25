@@ -10,7 +10,7 @@ enum dhash_size
   , h = 8
 }
 
-ulong generate_dhash(View)(View v)
+ulong generate_dhash(View)(in View v)
     if (isView!View)
 {
     typeof(return) dhash_bitfield;

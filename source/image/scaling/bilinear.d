@@ -5,13 +5,13 @@ import image.view;
 import image.color : RGB_8;
 
 /// Implements lazy image resizing using bilinear interpolation.
-auto bilinear(V)(V src, size_t new_w, size_t new_h)
+auto bilinear(V)(in V src, size_t new_w, size_t new_h)
     if (isView!V)
 {
     import std.conv : to;
     import std.traits;
 
-    static struct BilinearAccess
+    static const struct BilinearAccess
     {
         V src;
         int w, h;

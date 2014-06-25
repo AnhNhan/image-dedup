@@ -6,12 +6,10 @@ public import ae.utils.graphics.image;
 public import ae.utils.graphics.view;
 
 /// Implements lazy image resizing using bilinear interpolation.
-auto greyscale(V)(V src)
+auto greyscale(V)(in V src)
     if (isView!V)
 {
-    import std.traits;
-
-    struct Greyscale
+    static const struct Greyscale
     {
         V src;
 
@@ -25,7 +23,7 @@ auto greyscale(V)(V src)
 
             static if (__traits(compiles, orig.r, orig.g, orig.b, color(0, 0, 0)))
             {
-                const c = cast(ubyte) ((orig.r + orig.g + orig.b) / 3);
+                const c = cast(typeof(orig.r)) ((orig.r + orig.g + orig.b) / 3);
                 return color(c, c, c);
             }
             else static if(isIntegral!color)
