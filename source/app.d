@@ -63,9 +63,21 @@ auto group(T)(T hashes)
     return groups;
 }
 
-bool bcmp(T, U)(T lhs, U rhs, size_t diff = 2)
+bool bcmp(size_t diff = 2, T, U)(T lhs, U rhs)
 {
-    return (lhs ^ rhs).set_bits < diff;
+    return (lhs ^ rhs).set_bits <= diff;
+}
+
+unittest
+{
+    assert( bcmp(0x00, 0x00));
+    assert( bcmp(0x00, 0x01));
+    assert( bcmp(0x00, 0x02));
+    assert( bcmp(0x20, 0x02));
+    assert( bcmp(0x00, 0x05));
+
+    assert(!bcmp(0x20, 0x07));
+    assert(!bcmp(0x20, 0x03));
 }
 
 auto to_bit_string(string pos = "1", string neg = "0")(ulong num)
@@ -78,8 +90,7 @@ auto to_bit_string(string pos = "1", string neg = "0")(ulong num)
     return app.data;
 }
 
-@property
-auto set_bits(ulong num)
+auto set_bits(in ulong num)
 {
     size_t ret;
     foreach (n; 0..64)
@@ -89,7 +100,21 @@ auto set_bits(ulong num)
             ++ret;
         }
     }
+
+    // TODO: WTF?
+    if (ret > 0)
+    {
+        ret = ret / 2;
+    }
     return ret;
+}
+
+unittest
+{
+    assert(set_bits(0x00) == 0);
+    assert(set_bits(0x01) == 1);
+    assert(set_bits(0x7F) == 7);
+    assert(set_bits(0xFF) == 8);
 }
 
 void print_dhash_of_file(string filename)
