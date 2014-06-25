@@ -510,13 +510,14 @@ static int e(const char *str)
 // epf - error returning pointer to float
 // epuc - error returning pointer to unsigned char
 
-#ifdef STBI_NO_FAILURE_STRINGS
-   #define e(x,y)  0
-#elif defined(STBI_FAILURE_USERMSG)
-   #define e(x,y)  e(y)
-#else
-   #define e(x,y)  e(x)
-#endif
+// #ifdef STBI_NO_FAILURE_STRINGS
+//    #define e(x,y)  0
+// #elif defined(STBI_FAILURE_USERMSG)
+//    #define e(x,y)  e(y)
+// #else
+//    #define e(x,y)  e(x)
+// #endif
+#define e(x,y)  e(y)
 
 #define epf(x,y)   ((float *) (e(x,y)?NULL:NULL))
 #define epuc(x,y)  ((unsigned char *) (e(x,y)?NULL:NULL))
